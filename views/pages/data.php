@@ -18,7 +18,7 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
     <?php endif; ?>
 </section>
 
-<?php if ($page === 'students'): ?>
+<?php if ($page === 'students' && $role !== 'wali'): ?>
 <form class="student-filter" method="get">
     <input type="hidden" name="page" value="students">
     <label>Filter Halaqoh<select name="halaqoh_id" onchange="this.form.submit()"><option value="0">Semua Halaqoh</option><?php foreach(rows('SELECT id,name FROM halaqoh ORDER BY name') as $filterHalaqoh):?><option value="<?=(int)$filterHalaqoh['id']?>" <?=(int)$selectedHalaqohId===(int)$filterHalaqoh['id']?'selected':''?>><?=e($filterHalaqoh['name'])?></option><?php endforeach?></select></label>

@@ -1,0 +1,32 @@
+.page-dashboard .welcome,
+.page-dashboard .dashboard-shortcuts a,
+.page-dashboard .stat,
+.page-dashboard .card,
+.page-dashboard .guardian-child-panel {
+    border-radius: 14px;
+}
+
+.page-dashboard .dashboard-shortcuts,
+.page-dashboard .stats,
+.page-dashboard .grid.two {
+    align-items: stretch;
+}
+
+.page-dashboard .dashboard-shortcuts a {
+    height: 100%;
+    min-height: 72px;
+}
+
+.page-dashboard .stat {
+    height: 100%;
+    min-height: 94px;
+}
+
+.page-dashboard .grid.two > .card {
+    height: 100%;
+}
+
+@media (max-width: 720px) {
+    .page-dashboard .dashboard-shortcuts a { min-height: 68px; }
+    .page-dashboard .stat { min-height: 82px; }
+}
