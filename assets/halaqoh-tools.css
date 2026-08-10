@@ -73,10 +73,6 @@
 .transfer-mode-panel.active { animation: transfer-panel-in .18s ease-out; }
 @keyframes transfer-panel-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-.bulk-transfer-card {
-    border-top-color: #c59232;
-}
-
 .transfer-guide.warning {
     border-left-color: #c59232;
     background: #fff8e8;
@@ -87,10 +83,6 @@
     background: #f7e8bd;
     color: #8b650e;
     font-weight: 800;
-}
-
-.transfer-form-card {
-    border-top: 4px solid #175c45;
 }
 
 .transfer-guide {
