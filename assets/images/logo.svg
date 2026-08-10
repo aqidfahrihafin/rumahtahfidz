@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Logo Rumah Tahfidz As-Sakinah</title>
+  <rect width="512" height="512" fill="#176b35"/>
+  <path fill="#fff" d="M256 145c-48 0-87 18-111 49h222c-24-31-63-49-111-49Z"/>
+  <path fill="#fff" d="M249 145v-29c0-17 12-31 28-35-8 11-7 27 3 37 9 10 24 12 35 6-5 15-19 26-36 26-11 0-21-4-30-11Z"/>
+  <path fill="#fff" d="M287 72l7 14 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2Z"/>
+  <path fill="#fff" d="M20 244c80-8 152 6 222 49v158c-65-40-138-53-222-43V244Zm472 0c-80-8-152 6-222 49v158c65-40 138-53 222-43V244Z"/>
+  <path fill="#d9d9d9" d="M20 225c86-4 160 15 236 60-76-32-151-43-236-31v-29Zm472 0c-86-4-160 15-236 60 76-32 151-43 236-31v-29Z"/>
+  <path fill="#ececec" d="M256 285v166h-14V293Z"/>
+</svg>
