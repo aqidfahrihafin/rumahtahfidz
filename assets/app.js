@@ -36,6 +36,11 @@ function openForm(row = null) {
         });
     }
 
+    if (form.dataset.entity === "assessment") {
+        const studentField = form.elements.namedItem("student_id");
+        if (studentField) studentField.disabled = form.dataset.lockStudent === "1";
+    }
+
     modal.classList.add("show");
     modal.setAttribute("aria-hidden", "false");
     if (form.dataset.entity === "student") showStudentStep(1);
@@ -74,6 +79,10 @@ if (assessmentStudent) {
         document.getElementById("assessmentHalaqoh").value = option ? option.dataset.halaqoh || "" : "";
         document.getElementById("assessmentTeacher").value = option ? option.dataset.teacherName || "" : "";
         document.getElementById("assessmentTeacherId").value = option ? option.dataset.teacherId || "" : "";
+    });
+
+    assessmentStudent.form.addEventListener("submit", function () {
+        assessmentStudent.disabled = false;
     });
 }
 
