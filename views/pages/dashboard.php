@@ -14,8 +14,14 @@ if ($role === 'admin') {
         array('Rata-rata Nilai', round((float) scalar('SELECT AVG(memorization + murojaah) FROM assessments WHERE teacher_id = ?', array($dashboardTeacherId)), 1), '★'),
     );
 } else {
-    $studentId = (int) (scalar('SELECT id FROM students WHERE guardian_user_id = ?', array(user()['id'])) ?: 0);
-    $student = row('SELECT s.*, h.name AS halaqoh FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id WHERE s.id = ?', array($studentId));
+    $guardianStudents = rows('SELECT s.*, h.name AS halaqoh FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id WHERE s.guardian_user_id = ? ORDER BY s.name', array(user()['id']));
+    $requestedStudentId = (int) ($_GET['student_id'] ?? 0);
+    $student = null;
+    foreach ($guardianStudents as $guardianStudent) {
+        if ((int) $guardianStudent['id'] === $requestedStudentId) $student = $guardianStudent;
+    }
+    if (!$student && $guardianStudents) $student = $guardianStudents[0];
+    $studentId = $student ? (int) $student['id'] : 0;
     $latest = row('SELECT * FROM assessments WHERE student_id = ? ORDER BY date DESC LIMIT 1', array($studentId));
     $cards = array(
         array('Halaqoh', $student ? $student['halaqoh'] : '-', '◉'),
@@ -26,7 +32,7 @@ if ($role === 'admin') {
 
 $recentWhere = '';
 if ($role === 'wali') {
-    $recentWhere = 'WHERE s.guardian_user_id = ' . (int) user()['id'];
+    $recentWhere = 'WHERE s.guardian_user_id = ' . (int) user()['id'] . ' AND s.id = ' . (int) $studentId;
 } elseif ($role === 'ustadzah') {
     $recentWhere = 'WHERE a.teacher_id = ' . $dashboardTeacherId;
 }
@@ -41,6 +47,21 @@ $progress = rows('SELECT s.name AS student, h.name AS halaqoh, ROUND(AVG(a.memor
     </div>
     <div class="date-card"><small>Hari ini</small><b><?= e(format_date(date('Y-m-d'))) ?></b></div>
 </section>
+
+<?php if ($role === 'wali' && !empty($guardianStudents)): ?>
+<section class="child-switcher" aria-label="Pilih anak">
+    <div><p class="eyebrow green">Data Anak</p><h3><?= count($guardianStudents) > 1 ? 'Pilih perkembangan anak' : 'Perkembangan anak' ?></h3></div>
+    <div class="child-switcher-list">
+        <?php foreach ($guardianStudents as $guardianStudent): ?>
+            <a class="child-switcher-item <?= (int)$guardianStudent['id'] === $studentId ? 'active' : '' ?>" href="index.php?page=dashboard&student_id=<?= (int)$guardianStudent['id'] ?>">
+                <span><?= e(strtoupper(substr($guardianStudent['name'], 0, 1))) ?></span>
+                <div><b><?= e($guardianStudent['name']) ?></b><small><?= e($guardianStudent['student_code']) ?> · <?= e($guardianStudent['halaqoh'] ?: 'Belum masuk halaqoh') ?></small></div>
+                <i><?= (int)$guardianStudent['id'] === $studentId ? 'Dipilih' : 'Lihat' ?></i>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</section>
+<?php endif; ?>
 
 <nav class="dashboard-shortcuts" aria-label="Aksi cepat">
     <?php if ($role === 'admin'): ?>

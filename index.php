@@ -201,8 +201,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 redirect('index.php?page=teachers');
             }
             if ($entity === 'student' && user()['role'] === 'admin') {
-                save_student_with_guardian($_POST);
-                flash('success', 'Data santri dan akun wali berhasil disimpan.');
+                $studentResult = save_student_with_guardian($_POST);
+                $studentMessage = 'Data santri dan akun wali berhasil disimpan.';
+                if (!empty($studentResult['guardian_reused'])) {
+                    $studentMessage = 'Data santri berhasil disimpan dan dihubungkan ke akun wali yang sama. Akun tersebut kini memiliki ' . (int) $studentResult['child_count'] . ' anak.';
+                }
+                flash('success', $studentMessage);
                 redirect('index.php?page=students');
             }
         } catch (Throwable $exception) {

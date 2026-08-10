@@ -57,18 +57,28 @@ function save_student_with_guardian($input)
     global $db;
     $id = (int) ($input['id'] ?? 0);
     $current = $id ? row('SELECT * FROM students WHERE id = ?', array($id)) : null;
+    $existingGuardian = !$current ? find_user_by_email(trim($input['email'])) : null;
+    $guardianName = $existingGuardian ? $existingGuardian['name'] : trim($input['guardian_name']);
+    $guardianEmail = $existingGuardian ? $existingGuardian['email'] : trim($input['email']);
+    $guardianPhone = $existingGuardian ? $existingGuardian['phone'] : trim($input['guardian_phone']);
     $guardianUserId = save_role_account(
-        'wali', trim($input['guardian_name']), trim($input['email']), trim($input['guardian_phone']),
+        'wali', $guardianName, $guardianEmail, $guardianPhone,
         (string) ($input['login_password'] ?? ''), $current ? (int) $current['guardian_user_id'] : 0
     );
-    $values = array(trim($input['name']), trim($input['nickname'] ?? ''), trim($input['birth_date'] ?? ''), trim($input['email']), trim($input['gender']), trim($input['address']), (int) $input['halaqoh_id'], trim($input['guardian_name']), trim($input['guardian_phone']), $guardianUserId);
+    $values = array(trim($input['name']), trim($input['nickname'] ?? ''), trim($input['birth_date'] ?? ''), $guardianEmail, trim($input['gender']), trim($input['address']), (int) $input['halaqoh_id'], $guardianName, $guardianPhone, $guardianUserId);
 
     if ($current) {
         $values[] = $id;
         $db->prepare('UPDATE students SET name = ?, nickname = ?, birth_date = ?, email = ?, gender = ?, address = ?, halaqoh_id = ?, guardian_name = ?, guardian_phone = ?, guardian_user_id = ? WHERE id = ?')->execute($values);
     } else {
         $db->prepare('INSERT INTO students (name, nickname, birth_date, email, gender, address, halaqoh_id, guardian_name, guardian_phone, guardian_user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')->execute($values);
+        $studentId = (int) $db->lastInsertId();
+        $studentCode = 'RTAS-' . str_pad((string) $studentId, 5, '0', STR_PAD_LEFT);
+        $db->prepare('UPDATE students SET student_code = ? WHERE id = ?')->execute(array($studentCode, $studentId));
     }
+
+    $childCount = (int) scalar('SELECT COUNT(*) FROM students WHERE guardian_user_id = ?', array($guardianUserId));
+    return array('guardian_reused' => (bool) $existingGuardian, 'child_count' => $childCount);
 }
 
 function toggle_role_account($userId)

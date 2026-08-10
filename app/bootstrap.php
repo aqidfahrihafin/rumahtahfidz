@@ -138,6 +138,23 @@ function apply_student_profile_migration(PDO $db): void {
 
 apply_student_profile_migration($db);
 
+function apply_student_code_migration(PDO $db): void {
+    try {
+        $db->query('SELECT student_code FROM students LIMIT 1');
+    } catch (Throwable $exception) {
+        $db->exec('ALTER TABLE students ADD COLUMN student_code VARCHAR(30)');
+    }
+
+    $students = $db->query("SELECT id FROM students WHERE student_code IS NULL OR student_code = '' ORDER BY id")->fetchAll();
+    $update = $db->prepare('UPDATE students SET student_code = ? WHERE id = ?');
+    foreach ($students as $student) {
+        $id = (int) $student['id'];
+        $update->execute(array('RTAS-' . str_pad((string) $id, 5, '0', STR_PAD_LEFT), $id));
+    }
+}
+
+apply_student_code_migration($db);
+
 function apply_assessment_detail_migration(PDO $db): void {
     foreach (array('murojaah_start TEXT', 'murojaah_end TEXT', 'murojaah_juz INTEGER') as $column) {
         try {

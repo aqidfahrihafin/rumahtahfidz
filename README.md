@@ -50,6 +50,8 @@ Gunakan driver `auto` agar aplikasi memilih SQLite jika tersedia dan MySQL sebag
 - Sinkronisasi 114 surat dari EQuran.id v2 dan Juz awal dari Al Quran Cloud.
 - Pengurutan Data Surah berdasarkan Juz awal dan nomor resmi surat.
 - Relasi Halaqoh–Surat; cakupan Juz dan jumlah surat dihitung otomatis.
+- Nomor Induk Santri dibuat otomatis dengan format `RTAS-00001` berdasarkan ID database.
+- Satu akun wali dapat terhubung dengan beberapa anak melalui email yang sama; dashboard wali menyediakan pemilih anak agar progres tidak tercampur.
 
 ## Struktur kode
 

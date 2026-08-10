@@ -44,9 +44,9 @@ function data_page_config($page)
     $configs = array(
         'students' => array(
             'from' => 'students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN users account ON account.id = s.guardian_user_id',
-            'select' => 's.*, h.name AS halaqoh, account.is_active AS account_active',
-            'headers' => array('Nama', 'Email', 'JK', 'Alamat', 'Halaqoh', 'Wali', 'Kontak', 'Status Akun'),
-            'cells' => function ($row) { return array(e($row['name']), e($row['email']), e($row['gender']), e($row['address']), e($row['halaqoh']), e($row['guardian_name']), e($row['guardian_phone']), account_status_badge($row['guardian_user_id'], $row['account_active'])); },
+            'select' => 's.*, h.name AS halaqoh, account.is_active AS account_active, (SELECT COUNT(*) FROM students sibling WHERE sibling.guardian_user_id = s.guardian_user_id) AS guardian_child_count',
+            'headers' => array('Nomor Induk', 'Nama', 'Email', 'JK', 'Alamat', 'Halaqoh', 'Wali', 'Kontak', 'Status Akun'),
+            'cells' => function ($row) { return array('<b>' . e($row['student_code']) . '</b>', e($row['name']), e($row['email']), e($row['gender']), e($row['address']), e($row['halaqoh']), e($row['guardian_name']) . ((int)$row['guardian_child_count'] > 1 ? '<small>' . (int)$row['guardian_child_count'] . ' anak terhubung</small>' : ''), e($row['guardian_phone']), account_status_badge($row['guardian_user_id'], $row['account_active'])); },
             'table' => 'students', 'entity' => 'student', 'search' => 's.name'
         ),
         'teachers' => array(

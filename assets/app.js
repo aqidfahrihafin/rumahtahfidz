@@ -46,6 +46,30 @@ function openForm(row = null) {
     if (form.dataset.entity === "student") showStudentStep(1);
 }
 
+const studentForm = document.querySelector('#dataForm[data-entity="student"]');
+if (studentForm) {
+    const guardianEmail = studentForm.elements.namedItem("email");
+    const guardianName = studentForm.elements.namedItem("guardian_name");
+    const guardianPhone = studentForm.elements.namedItem("guardian_phone");
+    const guardianAccounts = JSON.parse(studentForm.dataset.guardianAccounts || "[]");
+    const guardianNotice = document.createElement("div");
+    guardianNotice.className = "guardian-account-notice full";
+    guardianNotice.hidden = true;
+    studentForm.querySelector(".form-actions").before(guardianNotice);
+
+    guardianEmail.addEventListener("input", function () {
+        const email = guardianEmail.value.trim().toLowerCase();
+        const account = guardianAccounts.find(function (item) { return String(item.email).toLowerCase() === email; });
+        guardianNotice.hidden = !account;
+        if (!account) return;
+        guardianNotice.textContent = "Email ini sudah menjadi akun wali " + account.name + " dan terhubung dengan " + Number(account.child_count) + " anak. Santri baru akan ditambahkan ke akun wali yang sama.";
+        if (!document.getElementById("recordId").value) {
+            guardianName.value = account.name || guardianName.value;
+            guardianPhone.value = account.phone || guardianPhone.value;
+        }
+    });
+}
+
 function showStudentStep(step) {
     const form = document.getElementById("dataForm");
     if (!form || form.dataset.entity !== "student") return;
@@ -223,7 +247,7 @@ document.querySelectorAll(".view-detail").forEach(function (button) {
 
         detail.innerHTML = "";
         const detailLabels = {
-            name: "Nama", nickname: "Nama panggilan", birth_date: "Tanggal lahir",
+            name: "Nama", student_code: "Nomor induk santri", nickname: "Nama panggilan", birth_date: "Tanggal lahir",
             gender: "Jenis kelamin", address: "Alamat", email: "Email",
             phone: "Nomor telepon", guardian_name: "Nama wali", guardian_phone: "WhatsApp wali",
             guardian_email: "Email wali", halaqoh: "Halaqoh", level: "Tingkat",
@@ -233,7 +257,7 @@ document.querySelectorAll(".view-detail").forEach(function (button) {
             surah: "Surat", verse_range: "Rentang ayat", memorization: "Nilai hafalan",
             murojaah: "Nilai murojaah", murojaah_start: "Awal murojaah", murojaah_end: "Akhir murojaah",
             murojaah_juz: "Juz murojaah", status: "Status", message: "Pesan ustadzah",
-            student_email: "Email santri", account_active: "Status akun"
+            student_email: "Email santri", guardian_child_count: "Jumlah anak terhubung", account_active: "Status akun"
         };
         function safeText(text) {
             const element = document.createElement("span");
