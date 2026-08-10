@@ -241,6 +241,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+if ($page === 'print-students') {
+    $studentConditions = array();
+    $studentParameters = array();
+    if (user()['role'] === 'ustadzah') {
+        $studentConditions[] = 'h.teacher_id = ?';
+        $studentParameters[] = (int) (scalar('SELECT id FROM teachers WHERE user_id = ?', array(user()['id'])) ?: 0);
+    } elseif (user()['role'] === 'wali') {
+        $studentConditions[] = 's.guardian_user_id = ?';
+        $studentParameters[] = user()['id'];
+    }
+    $studentPrintSql = 'SELECT s.*, h.name AS halaqoh, t.name AS teacher FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN teachers t ON t.id = h.teacher_id';
+    if ($studentConditions) $studentPrintSql .= ' WHERE ' . implode(' AND ', $studentConditions);
+    $studentPrintSql .= ' ORDER BY s.name';
+    $printStudents = rows($studentPrintSql, $studentParameters);
+    include __DIR__ . '/views/reports/students.php';
+    exit;
+}
+
 if ($page === 'print-report' || $page === 'print-reports' || $page === 'print-student-reports') {
     $conditions = array();
     $parameters = array();
