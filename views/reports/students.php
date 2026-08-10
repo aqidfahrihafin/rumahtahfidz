@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Data Santri — Rumah Tahfidz As-Sakinah</title>
     <link rel="icon" href="assets/images/logo.jpeg" type="image/jpeg">
-    <link rel="stylesheet" href="assets/print-students.css?v=20260811a">
+    <link rel="stylesheet" href="assets/print-students.css?v=20260811b">
 </head>
 <body>
     <div class="print-toolbar"><button type="button" onclick="window.print()">Simpan sebagai PDF</button><button class="secondary" type="button" onclick="window.close()">Tutup</button></div>
