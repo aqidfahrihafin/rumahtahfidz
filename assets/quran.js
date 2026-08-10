@@ -23,6 +23,23 @@
     if (search) search.addEventListener("input", filterSurahs);
     if (filter) filter.addEventListener("change", filterSurahs);
 
+    document.querySelectorAll(".reader-verse").forEach(function (verse) {
+        function toggleTranslation() {
+            const open = !verse.classList.contains("translation-open");
+            verse.classList.toggle("translation-open", open);
+            verse.setAttribute("aria-expanded", open ? "true" : "false");
+            const button = verse.querySelector(".verse-translation-toggle");
+            if (button) button.textContent = open ? "Sembunyikan terjemahan" : "Lihat terjemahan";
+        }
+        verse.querySelector(".verse-translation-toggle")?.addEventListener("click", toggleTranslation);
+        verse.addEventListener("click", function (event) {
+            if (!event.target.closest(".verse-translation-toggle")) toggleTranslation();
+        });
+        verse.addEventListener("keydown", function (event) {
+            if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggleTranslation(); }
+        });
+    });
+
     const lastReading = document.getElementById("lastReading");
     if (lastReading) {
         try {

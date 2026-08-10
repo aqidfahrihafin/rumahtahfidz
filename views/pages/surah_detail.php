@@ -25,10 +25,11 @@
                 <div class="surah-bismillah" lang="ar" dir="rtl">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
             <?php endif; ?>
             <?php foreach ($surahDetail['ayat'] as $verse): ?>
-                <section class="surah-reading-verse">
+                <section class="surah-reading-verse" tabindex="0" role="button" aria-expanded="false">
                     <div class="verse-number"><?= (int) $verse['nomorAyat'] ?></div>
                     <div>
                         <p class="verse-arabic" lang="ar" dir="rtl"><?= e($verse['teksArab']) ?></p>
+                        <button class="verse-translation-toggle" type="button">Lihat terjemahan</button>
                         <p class="verse-translation"><b><?= (int) $verse['nomorAyat'] ?>.</b> <?= e($verse['teksIndonesia']) ?></p>
                     </div>
                 </section>

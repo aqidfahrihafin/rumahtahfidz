@@ -6,6 +6,39 @@ function closeModal(id) {
     modal.setAttribute("aria-hidden", "true");
 }
 
+function toggleVerseTranslation(container) {
+    if (!container) return;
+    const open = !container.classList.contains("translation-open");
+    container.classList.toggle("translation-open", open);
+    container.setAttribute("aria-expanded", open ? "true" : "false");
+    const button = container.querySelector(".verse-translation-toggle");
+    if (button) button.textContent = open ? "Sembunyikan terjemahan" : "Lihat terjemahan";
+}
+
+document.addEventListener("click", function (event) {
+    const button = event.target.closest(".verse-translation-toggle");
+    if (button) {
+        toggleVerseTranslation(button.closest(".surah-reading-verse, .verse-item"));
+        return;
+    }
+    const verse = event.target.closest(".surah-reading-verse, .verse-item");
+    if (verse) toggleVerseTranslation(verse);
+});
+
+document.addEventListener("keydown", function (event) {
+    const verse = event.target.closest && event.target.closest(".surah-reading-verse, .verse-item");
+    if (verse && (event.key === "Enter" || event.key === " ") && !event.target.closest("button")) {
+        event.preventDefault();
+        toggleVerseTranslation(verse);
+    }
+});
+
+document.querySelectorAll('select[name="surah_ids[]"]').forEach(function (field) {
+    field.required = false;
+    const hint = field.parentElement.querySelector(".selection-hint small");
+    if (hint) hint.textContent = "Cakupan boleh dikosongkan dan dapat ditentukan kemudian. Untuk memilih beberapa surat, tahan Ctrl.";
+});
+
 function openForm(row = null) {
     const modal = document.getElementById("formModal");
     const form = document.getElementById("dataForm");
@@ -354,7 +387,7 @@ document.querySelectorAll(".view-detail").forEach(function (button) {
                 const surah = result.data;
                 const verses = Array.isArray(surah.ayat) ? surah.ayat : [];
                 detail.innerHTML = '<section class="surah-detail"><header><div><small>Surat ke-' + safeText(surah.nomor || row.surah_number) + ' • ' + safeText(surah.jumlahAyat || row.verses) + ' ayat</small><h4>' + safeText(surah.namaLatin || row.name) + '</h4><span>' + safeText(surah.arti || "") + '</span></div><strong dir="rtl">' + safeText(surah.nama || "") + '</strong></header><div class="surah-source">Teks dan terjemahan dari <a href="https://equran.id/apidev/v2" target="_blank" rel="noopener">EQuran.id</a></div><div class="verse-list">' + verses.map(function (verse) {
-                    return '<article class="verse-item"><div class="verse-number">' + safeText(verse.nomorAyat) + '</div><div><p class="verse-arabic" dir="rtl" lang="ar">' + safeText(verse.teksArab || "") + '</p><p class="verse-translation">' + safeText(verse.teksIndonesia || "") + '</p></div></article>';
+                    return '<article class="verse-item" tabindex="0" role="button" aria-expanded="false"><div class="verse-number">' + safeText(verse.nomorAyat) + '</div><div><p class="verse-arabic" dir="rtl" lang="ar">' + safeText(verse.teksArab || "") + '</p><button class="verse-translation-toggle" type="button">Lihat terjemahan</button><p class="verse-translation">' + safeText(verse.teksIndonesia || "") + '</p></div></article>';
                 }).join("") + '</div></section>';
             } catch (error) {
                 detail.innerHTML = '<div class="surah-error"><b>Ayat belum dapat dimuat</b><span>' + safeText(error.message) + ' Periksa koneksi internet lalu coba kembali.</span></div>';

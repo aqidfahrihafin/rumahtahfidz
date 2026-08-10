@@ -5,13 +5,15 @@ function save_halaqoh_with_surahs($input)
     global $db;
     $id = (int) ($input['id'] ?? 0);
     $surahIds = array_values(array_unique(array_filter(array_map('intval', $input['surah_ids'] ?? array()))));
-    if (!$surahIds) throw new InvalidArgumentException('Pilih minimal satu surat untuk cakupan Halaqoh.');
-    $placeholders = implode(',', array_fill(0, count($surahIds), '?'));
-    $selected = rows("SELECT id, name, juz, surah_number FROM surahs WHERE id IN ($placeholders) ORDER BY surah_number", $surahIds);
+    $selected = array();
+    if ($surahIds) {
+        $placeholders = implode(',', array_fill(0, count($surahIds), '?'));
+        $selected = rows("SELECT id, name, juz, surah_number FROM surahs WHERE id IN ($placeholders) ORDER BY surah_number", $surahIds);
+    }
     if (count($selected) !== count($surahIds)) throw new InvalidArgumentException('Terdapat pilihan surat yang tidak valid.');
     $juz = array_values(array_unique(array_map(function($surah){ return (int)$surah['juz']; }, $selected)));
     sort($juz);
-    $coverage = 'Juz ' . implode(', ', $juz);
+    $coverage = $juz ? 'Juz ' . implode(', ', $juz) : '';
 
     $db->beginTransaction();
     try {

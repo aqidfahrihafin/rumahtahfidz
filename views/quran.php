@@ -1,7 +1,7 @@
 <?php $quranContext = !empty($quranFromDashboard) ? '&from=dashboard' : ''; ?>
 <!doctype html>
 <html lang="id">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#155c43"><title>Baca Al-Qur’an — Rumah Tahfidz As-Sakinah</title><link rel="stylesheet" href="assets/quran.css?v=20260811c"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#155c43"><title>Baca Al-Qur’an — Rumah Tahfidz As-Sakinah</title><link rel="stylesheet" href="assets/quran.css?v=20260811c"><link rel="stylesheet" href="assets/quran-enhancements.css?v=20260811a"></head>
 <body>
 <header class="quran-nav"><div class="quran-wrap"><a href="index.php?page=<?=!empty($quranFromDashboard)?'dashboard':'home'?>">← <?=!empty($quranFromDashboard)?'Dashboard':'Beranda'?></a><b>Baca Al-Qur’an</b><a href="index.php?page=<?=!empty($quranFromDashboard)?'profile':'login'?>"><?=!empty($quranFromDashboard)?'Profil':'Masuk'?></a></div></header>
 <main class="quran-wrap quran-main">
@@ -14,5 +14,5 @@
     </section>
     <div class="quran-empty" id="quranEmpty" hidden>Surat yang dicari tidak ditemukan.</div>
 </main>
-<script src="assets/quran.js?v=20260811c"></script>
+<script src="assets/quran.js?v=20260811d"></script>
 </body></html>

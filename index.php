@@ -11,7 +11,12 @@ require __DIR__ . '/app/relations.php';
 $page = $_GET['page'] ?? (user() ? 'dashboard' : 'home');
 $action = $_POST['action'] ?? '';
 
-if ($page === 'logout') { session_destroy(); redirect('index.php?page=login'); }
+if ($page === 'logout') {
+    $_SESSION = array();
+    session_regenerate_id(true);
+    flash('success', 'Anda berhasil keluar dari sistem. Sampai jumpa kembali.');
+    redirect('index.php?page=login');
+}
 if ($page === 'home') {
     include __DIR__ . '/views/landing.php';
     exit;

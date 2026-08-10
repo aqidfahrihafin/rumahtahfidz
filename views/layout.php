@@ -17,6 +17,7 @@ $role = user()['role'];
     <link rel="stylesheet" href="assets/halaqoh-tools.css?v=20260811e">
     <link rel="stylesheet" href="assets/guardian-dashboard.css?v=20260811b">
     <link rel="stylesheet" href="assets/dashboard-unified.css?v=20260811b">
+    <link rel="stylesheet" href="assets/quran-enhancements.css?v=20260811a">
 </head>
 <body class="page-<?=e($page)?> role-<?=e($role)?>">
     <div class="app-shell">
@@ -40,6 +41,6 @@ $role = user()['role'];
     <?php include __DIR__ . '/partials/detail_modal.php'; ?>
     <?php include __DIR__ . '/partials/confirm_modal.php'; ?>
     <div class="sidebar-overlay" onclick="document.body.classList.remove('menu-open')"></div>
-    <script src="assets/app.js?v=20260811x"></script>
+    <script src="assets/app.js?v=20260811y"></script>
 </body>
 </html>
