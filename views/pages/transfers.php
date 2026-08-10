@@ -18,13 +18,12 @@
         </div>
 
         <div class="transfer-mode-panel" data-transfer-panel="halaqoh" hidden>
-        <div class="history-section-title"><div><p class="eyebrow green">Perpindahan Massal</p><h3>Pindahkan Satu Halaqoh</h3></div></div>
         <div class="transfer-guide warning"><span>!</span><div><b>Seluruh santri akan dipindahkan</b><p>Semua santri pada Halaqoh asal berpindah ke Halaqoh tujuan dalam satu proses.</p></div></div>
         <form method="post" class="transfer-form" data-confirm data-confirm-type="warning" data-confirm-title="Pindahkan seluruh santri?" data-confirm-message="Semua santri pada Halaqoh asal akan dipindahkan dan masing-masing mendapatkan catatan riwayat." data-confirm-button="Ya, pindahkan semua">
             <input type="hidden" name="csrf" value="<?= csrf() ?>"><input type="hidden" name="action" value="transfer_halaqoh_bulk">
-            <label>Halaqoh Asal<select name="from_halaqoh_id" id="bulkTransferSource" required><option value="">Pilih Halaqoh asal</option><?php foreach($transferHalaqohs as $halaqoh):$studentCount=(int)scalar('SELECT COUNT(*) FROM students WHERE halaqoh_id=?',array($halaqoh['id']));?><option value="<?=(int)$halaqoh['id']?>"><?=e($halaqoh['name'])?> — <?=$studentCount?> santri</option><?php endforeach?></select></label>
+            <label>Halaqoh Asal<select name="from_halaqoh_id" id="bulkTransferSource" required><option value="">Pilih Halaqoh asal</option><?php foreach($transferHalaqohs as $halaqoh):$studentCount=(int)scalar('SELECT COUNT(*) FROM students WHERE halaqoh_id=?',array($halaqoh['id']));if($studentCount<1)continue;?><option value="<?=(int)$halaqoh['id']?>"><?=e($halaqoh['name'])?> — <?=$studentCount?> santri</option><?php endforeach?></select></label>
             <label>Halaqoh Tujuan<select name="to_halaqoh_id" id="bulkTransferDestination" required><option value="">Pilih Halaqoh tujuan</option><?php foreach($transferHalaqohs as $halaqoh):?><option value="<?=(int)$halaqoh['id']?>"><?=e($halaqoh['name'])?> — <?=e($halaqoh['level'])?></option><?php endforeach?></select></label>
-            <label>Tanggal Perpindahan<input type="date" name="transfer_date" value="<?=date('Y-m-d')?>" required></label>
+            <label class="full">Tanggal Perpindahan<input type="date" name="transfer_date" value="<?=date('Y-m-d')?>" required></label>
             <label class="full">Catatan<textarea name="notes" rows="3" placeholder="Contoh: Kenaikan tingkat Halaqoh"></textarea></label>
             <div class="full transfer-submit"><button class="btn primary" type="submit">Pindahkan Semua Santri</button></div>
         </form>

@@ -14,7 +14,7 @@ $role = user()['role'];
     <link rel="icon" href="assets/images/logo.jpeg" type="image/jpeg">
     <link rel="stylesheet" href="assets/app.css?v=20260811f">
     <link rel="stylesheet" href="assets/components.css?v=20260811zf">
-    <link rel="stylesheet" href="assets/halaqoh-tools.css?v=20260811c">
+    <link rel="stylesheet" href="assets/halaqoh-tools.css?v=20260811d">
 </head>
 <body>
     <div class="app-shell">
