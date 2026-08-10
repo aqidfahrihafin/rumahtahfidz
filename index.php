@@ -6,6 +6,7 @@ require __DIR__ . '/app/accounts.php';
 require __DIR__ . '/app/assessments.php';
 require __DIR__ . '/app/quran_api.php';
 require __DIR__ . '/app/halaqoh.php';
+require __DIR__ . '/app/relations.php';
 
 $page = $_GET['page'] ?? (user() ? 'dashboard' : 'home');
 $action = $_POST['action'] ?? '';
@@ -297,7 +298,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($action === 'delete') {
         require_role('admin','ustadzah'); $allowed=['students','teachers','halaqoh','categories','indicators','surahs','assessments']; $table=$_POST['table']??'';
-        if(in_array($table,$allowed,true)){$db->prepare("DELETE FROM $table WHERE id=?")->execute([(int)$_POST['id']]);flash('success','Data berhasil dihapus.');}
+        if (in_array($table, $allowed, true)) {
+            $recordId = (int) ($_POST['id'] ?? 0);
+            $relationMessage = deletion_relation_message($table, $recordId);
+            if ($relationMessage !== '') {
+                flash('error', $relationMessage);
+            } else {
+                $db->prepare("DELETE FROM $table WHERE id = ?")->execute(array($recordId));
+                flash('success', 'Data berhasil dihapus.');
+            }
+        }
         redirect('index.php?page='.($_POST['return']??'dashboard'));
     }
 }
