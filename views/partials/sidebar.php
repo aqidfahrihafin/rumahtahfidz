@@ -12,7 +12,7 @@
             <?php if ($navPage === 'students'): ?><span class="nav-label">Master Data</span><?php endif; ?>
             <?php if ($navPage === 'assessments'): ?><span class="nav-label">Monitoring</span><?php endif; ?>
             <?php if ($navPage === 'profile'): ?><span class="nav-label">Akun</span><?php endif; ?>
-            <a href="index.php?page=<?= e($navPage) ?>" class="<?= $page === $navPage ? 'active' : '' ?>">
+            <a href="index.php?page=<?= e($navPage) ?>" class="<?= $page === $navPage || ($page === 'history' && isset($historyBackPage) && $historyBackPage === $navPage) ? 'active' : '' ?>">
                 <i><?= $pages[$navPage]['icon'] ?></i>
                 <span><?= e($pages[$navPage]['title']) ?></span>
             </a>

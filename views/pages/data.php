@@ -30,7 +30,7 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
                         <?php if ($canManage): ?>
                             <td class="actions">
                                 <?php if (!empty($dataConfig['group_history'])): ?>
-                                    <button class="btn history-button view-history" type="button" data-student-id="<?= (int)$record['student_id'] ?>" data-history-type="assessment">Riwayat <span><?= (int)$record['history_count'] ?></span></button>
+                                    <a class="btn history-button" href="index.php?page=history&type=assessment&student_id=<?= (int)$record['student_id'] ?>">Riwayat <span><?= (int)$record['history_count'] ?></span></a>
                                 <?php else: ?>
                                 <?php if ($page === 'surahs'): ?>
                                     <a class="icon-btn surah-read-link" href="index.php?page=surah-detail&id=<?= (int) $record['id'] ?>" title="Baca ayat surat">◉</a>
@@ -78,7 +78,7 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
                         <?php elseif ($hasReportActions): ?>
                             <td class="actions report-actions">
                                 <?php if (!empty($dataConfig['group_history'])): ?>
-                                    <button class="btn history-button view-history" type="button" data-student-id="<?= (int)$record['student_id'] ?>" data-history-type="report">Riwayat <span><?= (int)$record['history_count'] ?></span></button>
+                                    <a class="btn history-button" href="index.php?page=history&type=report&student_id=<?= (int)$record['student_id'] ?>">Riwayat <span><?= (int)$record['history_count'] ?></span></a>
                                 <?php else: ?>
                                 <button class="icon-btn view-detail" type="button" data-entity="<?= e($page) ?>" data-row='<?= e(json_encode($record)) ?>' title="Lihat detail">◉</button>
                                 <a class="icon-btn print" href="index.php?page=print-report&id=<?= (int) $record['id'] ?>" target="_blank" title="Cetak laporan">▣</a>

@@ -176,6 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             flash('error', 'Email belum terkirim. Periksa konfigurasi SMTP/mail pada PHP Laragon.');
         }
+        $emailReturn = $_POST['return'] ?? 'reports';
+        if ($emailReturn === 'history') redirect('index.php?page=history&type=report&student_id=' . (int) ($_POST['student_id'] ?? 0));
         redirect('index.php?page=reports');
     }
     if ($action === 'save') {
@@ -287,6 +289,40 @@ if ($page === 'surah-detail') {
     $role = user()['role'];
     $pages = page_definitions($role);
     $pageMeta = array('title' => $surahRecord ? 'Surat ' . $surahRecord['name'] : 'Detail Surat', 'description' => 'Bacaan dan terjemahan surat.', 'template' => 'surah_detail');
+    $flash = take_flash();
+    include __DIR__ . '/views/layout.php';
+    exit;
+}
+
+if ($page === 'history') {
+    $historyType = ($_GET['type'] ?? '') === 'report' ? 'report' : 'assessment';
+    $historyBackPage = $historyType === 'report' ? 'reports' : 'assessments';
+    $historyStudentId = (int) ($_GET['student_id'] ?? 0);
+    $historySql = 'SELECT a.*, s.name AS student, s.guardian_name, s.guardian_phone, COALESCE(u.email, s.email) AS guardian_email, h.name AS halaqoh, t.name AS teacher FROM assessments a JOIN students s ON s.id=a.student_id LEFT JOIN halaqoh h ON h.id=s.halaqoh_id LEFT JOIN teachers t ON t.id=a.teacher_id LEFT JOIN users u ON u.id=s.guardian_user_id WHERE s.id=?';
+    $historyParams = array($historyStudentId);
+    if (user()['role'] === 'ustadzah') {
+        $historySql .= ' AND a.teacher_id=?';
+        $historyParams[] = (int) (scalar('SELECT id FROM teachers WHERE user_id=?', array(user()['id'])) ?: 0);
+    } elseif (user()['role'] === 'wali') {
+        $historySql .= ' AND s.guardian_user_id=?';
+        $historyParams[] = (int) user()['id'];
+    }
+    $historySql .= ' ORDER BY a.date DESC, a.id DESC';
+    $historyRows = rows($historySql, $historyParams);
+    $historyStudent = $historyRows ? $historyRows[0] : null;
+    $historyTotal = count($historyRows);
+    $historyScoreTotal = 0;
+    $historyBestScore = 0;
+    foreach ($historyRows as $historyIndex => $historyRow) {
+        $score = report_score($historyRow);
+        $historyRows[$historyIndex]['final_score'] = $score;
+        $historyScoreTotal += $score;
+        $historyBestScore = max($historyBestScore, $score);
+    }
+    $historyAverage = $historyTotal ? round($historyScoreTotal / $historyTotal, 1) : 0;
+    $role = user()['role'];
+    $pages = page_definitions($role);
+    $pageMeta = array('title' => $historyType === 'report' ? 'Riwayat Laporan' : 'Riwayat Penilaian', 'description' => 'Riwayat perkembangan santri.', 'template' => 'history');
     $flash = take_flash();
     include __DIR__ . '/views/layout.php';
     exit;
