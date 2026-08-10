@@ -105,13 +105,11 @@ document.querySelectorAll(".edit-row").forEach(function (button) {
     });
 });
 
-document.querySelectorAll(".edit-assessment").forEach(function (button) {
-    button.addEventListener("click", async function () {
-        const originalText = button.textContent;
-        button.disabled = true;
-        button.textContent = "…";
+async function editAssessment(assessmentId, button) {
+        const originalText = button ? button.textContent : "";
+        if (button) { button.disabled = true; button.textContent = "…"; }
         try {
-            const response = await fetch("index.php?page=api-assessment-detail&id=" + encodeURIComponent(button.dataset.id), { headers: { "Accept": "application/json" } });
+            const response = await fetch("index.php?page=api-assessment-detail&id=" + encodeURIComponent(assessmentId), { headers: { "Accept": "application/json" } });
             const result = await response.json();
             if (!response.ok || !result.success) throw new Error(result.message || "Data penilaian tidak dapat dimuat.");
             const assessment = result.assessment;
@@ -151,14 +149,57 @@ document.querySelectorAll(".edit-assessment").forEach(function (button) {
         } catch (error) {
             window.alert(error.message);
         } finally {
-            button.disabled = false;
-            button.textContent = originalText;
+            if (button) { button.disabled = false; button.textContent = originalText; }
+        }
+}
+
+document.querySelectorAll(".edit-assessment").forEach(function (button) {
+    button.addEventListener("click", function () {
+        editAssessment(button.dataset.id, button);
+    });
+});
+
+function historyText(value) {
+    const element = document.createElement("span");
+    element.textContent = String(value === null || value === undefined || value === "" ? "-" : value);
+    return element.innerHTML;
+}
+
+document.querySelectorAll(".view-history").forEach(function (button) {
+    button.addEventListener("click", async function () {
+        const detail = document.getElementById("detailContent");
+        const modal = document.getElementById("detailModal");
+        const modalBox = modal.querySelector(".modal-box");
+        document.getElementById("detailTitle").textContent = button.dataset.historyType === "report" ? "Riwayat Laporan" : "Riwayat Penilaian";
+        modalBox.classList.add("history-modal-box");
+        detail.innerHTML = '<div class="history-loading">Memuat riwayat santri...</div>';
+        modal.classList.add("show"); modal.setAttribute("aria-hidden", "false");
+        try {
+            const response = await fetch("index.php?page=api-student-history&student_id=" + encodeURIComponent(button.dataset.studentId), { headers: { "Accept": "application/json" } });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.message || "Riwayat tidak dapat dimuat.");
+            const isReport = button.dataset.historyType === "report";
+            detail.innerHTML = '<section class="history-summary"><div><small>Nama Santri</small><b>' + historyText(result.student) + '</b></div><div><small>Halaqoh</small><b>' + historyText(result.halaqoh) + '</b></div><div><small>Total Riwayat</small><b>' + result.history.length + ' penilaian</b></div></section><section class="assessment-history">' + result.history.map(function (item) {
+                const statusClass = String(item.status || "").toLowerCase().replaceAll(" ", "-");
+                let actions = '<a class="history-action print" href="' + historyText(item.print_url) + '" target="_blank">Cetak</a>';
+                if (result.can_manage) {
+                    actions = '<button type="button" class="history-action edit history-edit" data-id="' + Number(item.id) + '">Edit</button>' + actions;
+                    if (isReport) actions += '<a class="history-action wa" href="' + historyText(item.whatsapp_url) + '" target="_blank" rel="noopener">WhatsApp</a><form method="post"><input type="hidden" name="csrf" value="' + historyText(result.csrf) + '"><input type="hidden" name="action" value="send_report_email"><input type="hidden" name="id" value="' + Number(item.id) + '"><button class="history-action email" type="submit">Email</button></form>';
+                }
+                return '<article class="history-item"><header><div><small>' + historyText(item.formatted_date) + '</small><b>' + historyText(item.surah) + ' ayat ' + historyText(item.verse_range) + '</b></div><span class="badge ' + historyText(statusClass) + '">' + historyText(item.status) + '</span></header><div class="history-scores"><div><small>Hafalan</small><b>' + (Number(item.memorization) * 2) + '</b></div><div><small>Murojaah</small><b>' + (Number(item.murojaah) * 2) + '</b></div><div class="final"><small>Nilai Akhir</small><b>' + Number(item.final_score) + '<em>/100</em></b></div></div><div class="history-meta"><span>Murojaah: <b>' + historyText(item.murojaah_start) + ' – ' + historyText(item.murojaah_end) + '</b></span><span>Penilai: <b>' + historyText(item.teacher) + '</b></span></div><p>' + historyText(item.message || "Belum ada catatan.") + '</p><footer>' + actions + '</footer></article>';
+            }).join("") + '</section>';
+            detail.querySelectorAll(".history-edit").forEach(function (editButton) {
+                editButton.addEventListener("click", function () { closeModal("detailModal"); editAssessment(editButton.dataset.id, editButton); });
+            });
+        } catch (error) {
+            detail.innerHTML = '<div class="history-loading error">' + historyText(error.message) + '</div>';
         }
     });
 });
 
 document.querySelectorAll(".view-detail").forEach(function (button) {
     button.addEventListener("click", async function () {
+        document.querySelector("#detailModal .modal-box")?.classList.remove("history-modal-box");
         const row = JSON.parse(button.dataset.row);
         const detail = document.getElementById("detailContent");
         const hiddenFields = ["id", "password", "user_id", "guardian_user_id", "teacher_id", "student_id", "halaqoh_id", "category_id", "surah_ids", "juz_list", "surah_count"];

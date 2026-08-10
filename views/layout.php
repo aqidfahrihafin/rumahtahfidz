@@ -13,7 +13,7 @@ $role = user()['role'];
     <title><?= e($pageMeta['title']) ?> — Rumah Tahfidz As-Sakinah</title>
     <link rel="icon" href="assets/images/logo.jpeg" type="image/jpeg">
     <link rel="stylesheet" href="assets/app.css?v=20260811f">
-    <link rel="stylesheet" href="assets/components.css?v=20260811x">
+    <link rel="stylesheet" href="assets/components.css?v=20260811y">
 </head>
 <body>
     <div class="app-shell">
@@ -37,6 +37,6 @@ $role = user()['role'];
     <?php include __DIR__ . '/partials/detail_modal.php'; ?>
     <?php include __DIR__ . '/partials/confirm_modal.php'; ?>
     <div class="sidebar-overlay" onclick="document.body.classList.remove('menu-open')"></div>
-    <script src="assets/app.js?v=20260811o"></script>
+    <script src="assets/app.js?v=20260811p"></script>
 </body>
 </html>

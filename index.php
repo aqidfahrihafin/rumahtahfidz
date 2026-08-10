@@ -57,6 +57,30 @@ if ($action === 'login') {
 if ($page === 'login') { if(user()) redirect('index.php'); $flash=take_flash(); include __DIR__.'/views/login.php'; exit; }
 require_login();
 
+if ($page === 'api-student-history') {
+    header('Content-Type: application/json; charset=UTF-8');
+    $studentId = (int) ($_GET['student_id'] ?? 0);
+    $historySql = 'SELECT a.*, s.name AS student, s.guardian_name, s.guardian_phone, COALESCE(u.email, s.email) AS guardian_email, h.name AS halaqoh, t.name AS teacher FROM assessments a JOIN students s ON s.id=a.student_id LEFT JOIN halaqoh h ON h.id=s.halaqoh_id LEFT JOIN teachers t ON t.id=a.teacher_id LEFT JOIN users u ON u.id=s.guardian_user_id WHERE s.id=?';
+    $historyParams = array($studentId);
+    if (user()['role'] === 'ustadzah') {
+        $historySql .= ' AND a.teacher_id=?';
+        $historyParams[] = (int) (scalar('SELECT id FROM teachers WHERE user_id=?', array(user()['id'])) ?: 0);
+    } elseif (user()['role'] === 'wali') {
+        $historySql .= ' AND s.guardian_user_id=?';
+        $historyParams[] = (int) user()['id'];
+    }
+    $historySql .= ' ORDER BY a.date DESC, a.id DESC';
+    $historyRows = rows($historySql, $historyParams);
+    foreach ($historyRows as $historyIndex => $historyRow) {
+        $historyRows[$historyIndex]['formatted_date'] = format_date($historyRow['date']);
+        $historyRows[$historyIndex]['final_score'] = report_score($historyRow);
+        $historyRows[$historyIndex]['print_url'] = 'index.php?page=print-report&id=' . (int) $historyRow['id'];
+        $historyRows[$historyIndex]['whatsapp_url'] = whatsapp_report_url($historyRow);
+    }
+    echo json_encode(array('success' => true, 'student' => $historyRows ? $historyRows[0]['student'] : '', 'halaqoh' => $historyRows ? $historyRows[0]['halaqoh'] : '', 'can_manage' => user()['role'] !== 'wali', 'csrf' => csrf(), 'history' => $historyRows), JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if ($page === 'api-assessment-detail') {
     header('Content-Type: application/json; charset=UTF-8');
     $assessmentId = (int) ($_GET['id'] ?? 0);
@@ -319,6 +343,23 @@ if ($page !== 'dashboard' && $page !== 'profile') {
     }
     $sql .= ' ORDER BY ' . (isset($dataConfig['order']) ? $dataConfig['order'] : '1 DESC');
     $data = rows($sql, $parameters);
+    if (!empty($dataConfig['group_history'])) {
+        $groupedData = array();
+        foreach ($data as $record) {
+            $studentKey = (int) $record['student_id'];
+            if (!isset($groupedData[$studentKey])) {
+                $groupedData[$studentKey] = $record;
+                $groupedData[$studentKey]['history_count'] = 0;
+                $groupedData[$studentKey]['score_total'] = 0;
+            }
+            $groupedData[$studentKey]['history_count']++;
+            $groupedData[$studentKey]['score_total'] += (int) $record['memorization'] + (int) $record['murojaah'];
+        }
+        foreach ($groupedData as $studentKey => $record) {
+            $groupedData[$studentKey]['average_score'] = round($record['score_total'] / max(1, $record['history_count']), 1);
+        }
+        $data = array_values($groupedData);
+    }
 }
 
 include __DIR__ . '/views/layout.php';

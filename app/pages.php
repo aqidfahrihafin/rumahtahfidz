@@ -81,16 +81,16 @@ function data_page_config($page)
         'assessments' => array(
             'from' => 'assessments a JOIN students s ON s.id = a.student_id JOIN halaqoh h ON h.id = s.halaqoh_id',
             'select' => 'a.*, s.name AS student, s.email AS student_email, s.guardian_name, s.guardian_phone, h.name AS halaqoh',
-            'headers' => array('Santri', 'Halaqoh', 'Tanggal', 'Surah', 'Hafalan', 'Murojaah', 'Status', 'Pesan'),
-            'cells' => function ($row) { return array(e($row['student']), e($row['halaqoh']), e(format_date($row['date'])), e($row['surah'] . ' ' . $row['verse_range']), e($row['memorization']), e($row['murojaah']), status_badge($row['status']), e($row['message'])); },
-            'table' => 'assessments', 'entity' => 'assessment', 'search' => 's.name'
+            'headers' => array('Santri', 'Halaqoh', 'Jumlah Penilaian', 'Penilaian Terakhir', 'Setoran Terakhir', 'Rata-rata', 'Status Terakhir'),
+            'cells' => function ($row) { return array(e($row['student']), e($row['halaqoh']), '<b>' . (int)$row['history_count'] . '</b> kali', e(format_date($row['date'])), e($row['surah'] . ' ayat ' . $row['verse_range']), '<b>' . e($row['average_score']) . ' / 100</b>', status_badge($row['status'])); },
+            'table' => 'assessments', 'entity' => 'assessment', 'search' => 's.name', 'group_history' => true, 'order' => 'a.date DESC, a.id DESC'
         ),
         'reports' => array(
             'from' => 'assessments a JOIN students s ON s.id = a.student_id JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN teachers t ON t.id = a.teacher_id LEFT JOIN users u ON u.id = s.guardian_user_id',
             'select' => 'a.*, s.name AS student, COALESCE(u.email, s.email) AS guardian_email, s.guardian_name, s.guardian_phone, h.name AS halaqoh, t.name AS teacher',
-            'headers' => array('Santri', 'Halaqoh', 'Tanggal', 'Setoran Hafalan', 'Murojaah', 'Ustadzah Penilai', 'Nilai Akhir', 'Status'),
-            'cells' => function ($row) { return array(e($row['student']), e($row['halaqoh']), e(format_date($row['date'])), e($row['surah'] . ' ayat ' . $row['verse_range']), e(($row['murojaah_start'] ?: '-') . ' – ' . ($row['murojaah_end'] ?: '-')), e($row['teacher']), '<b>' . ($row['memorization'] + $row['murojaah']) . ' / 100</b>', status_badge($row['status'])); },
-            'table' => '', 'entity' => '', 'search' => 's.name'
+            'headers' => array('Santri', 'Halaqoh', 'Jumlah Laporan', 'Laporan Terakhir', 'Ustadzah Penilai', 'Rata-rata', 'Status Terakhir'),
+            'cells' => function ($row) { return array(e($row['student']), e($row['halaqoh']), '<b>' . (int)$row['history_count'] . '</b> laporan', e(format_date($row['date'])), e($row['teacher']), '<b>' . e($row['average_score']) . ' / 100</b>', status_badge($row['status'])); },
+            'table' => '', 'entity' => '', 'search' => 's.name', 'group_history' => true, 'order' => 'a.date DESC, a.id DESC'
         ),
     );
 

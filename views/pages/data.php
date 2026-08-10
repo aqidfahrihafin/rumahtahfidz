@@ -29,6 +29,9 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
                         <?php foreach ($dataConfig['cells']($record) as $cell): ?><td><?= $cell ?></td><?php endforeach; ?>
                         <?php if ($canManage): ?>
                             <td class="actions">
+                                <?php if (!empty($dataConfig['group_history'])): ?>
+                                    <button class="btn history-button view-history" type="button" data-student-id="<?= (int)$record['student_id'] ?>" data-history-type="assessment">Riwayat <span><?= (int)$record['history_count'] ?></span></button>
+                                <?php else: ?>
                                 <?php if ($page === 'surahs'): ?>
                                     <a class="icon-btn surah-read-link" href="index.php?page=surah-detail&id=<?= (int) $record['id'] ?>" title="Baca ayat surat">◉</a>
                                 <?php else: ?>
@@ -70,9 +73,13 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
                                         <button class="icon-btn account-on" type="submit" title="Buat dan aktifkan akun">＋</button>
                                     </form>
                                 <?php endif; ?>
+                                <?php endif; ?>
                             </td>
                         <?php elseif ($hasReportActions): ?>
                             <td class="actions report-actions">
+                                <?php if (!empty($dataConfig['group_history'])): ?>
+                                    <button class="btn history-button view-history" type="button" data-student-id="<?= (int)$record['student_id'] ?>" data-history-type="report">Riwayat <span><?= (int)$record['history_count'] ?></span></button>
+                                <?php else: ?>
                                 <button class="icon-btn view-detail" type="button" data-entity="<?= e($page) ?>" data-row='<?= e(json_encode($record)) ?>' title="Lihat detail">◉</button>
                                 <a class="icon-btn print" href="index.php?page=print-report&id=<?= (int) $record['id'] ?>" target="_blank" title="Cetak laporan">▣</a>
                                 <?php if ($role !== 'wali'): ?>
@@ -83,6 +90,7 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
                                         <input type="hidden" name="id" value="<?= (int) $record['id'] ?>">
                                         <button class="icon-btn email" type="submit" title="Kirim ke email">✉</button>
                                     </form>
+                                <?php endif; ?>
                                 <?php endif; ?>
                             </td>
                         <?php endif; ?>
