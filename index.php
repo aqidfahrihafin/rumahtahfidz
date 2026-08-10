@@ -172,9 +172,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$report) {
             flash('error', 'Laporan tidak ditemukan.');
         } elseif (send_report_email($report)) {
-            flash('success', 'Laporan berhasil dikirim ke email wali.');
+            flash('success', 'Laporan berhasil diserahkan ke server email untuk dikirim kepada wali.');
         } else {
-            flash('error', 'Email belum terkirim. Periksa konfigurasi SMTP/mail pada PHP Laragon.');
+            flash('error', 'Laporan ditolak oleh server email. Periksa layanan mail pada hosting dan alamat email wali.');
         }
         $emailReturn = $_POST['return'] ?? 'reports';
         if ($emailReturn === 'history') redirect('index.php?page=history&type=report&student_id=' . (int) ($_POST['student_id'] ?? 0));

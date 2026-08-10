@@ -15,6 +15,14 @@ function openForm(row = null) {
     document.getElementById("recordId").value = row ? row.id : "";
     document.getElementById("formTitle").textContent = (row ? "Edit" : "Tambah") + " data";
 
+    if (!row && form.dataset.entity === "assessment" && form.dataset.defaultStudentId) {
+        const studentField = form.elements.namedItem("student_id");
+        if (studentField) {
+            studentField.value = form.dataset.defaultStudentId;
+            studentField.dispatchEvent(new Event("change"));
+        }
+    }
+
     if (row) {
         form.querySelectorAll("[data-field]").forEach(function (field) {
             if (row[field.dataset.field] !== undefined) {
