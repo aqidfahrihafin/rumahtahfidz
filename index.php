@@ -206,6 +206,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         redirect('index.php?page=transfers');
     }
+    if ($action === 'transfer_halaqoh_bulk') {
+        require_role('admin');
+        $fromHalaqohId = (int) ($_POST['from_halaqoh_id'] ?? 0);
+        $toHalaqohId = (int) ($_POST['to_halaqoh_id'] ?? 0);
+        $transferDate = trim($_POST['transfer_date'] ?? '');
+        $sourceHalaqoh = row('SELECT id, name FROM halaqoh WHERE id = ?', array($fromHalaqohId));
+        $destinationHalaqoh = row('SELECT id, name FROM halaqoh WHERE id = ?', array($toHalaqohId));
+        $studentsToTransfer = $sourceHalaqoh ? rows('SELECT id FROM students WHERE halaqoh_id = ? ORDER BY id', array($fromHalaqohId)) : array();
+
+        if (!$sourceHalaqoh || !$destinationHalaqoh) {
+            flash('error', 'Halaqoh asal atau tujuan tidak ditemukan.');
+        } elseif ($fromHalaqohId === $toHalaqohId) {
+            flash('error', 'Halaqoh tujuan harus berbeda dari Halaqoh asal.');
+        } elseif ($transferDate === '') {
+            flash('error', 'Tanggal perpindahan wajib diisi.');
+        } elseif (!$studentsToTransfer) {
+            flash('error', 'Tidak ada santri pada Halaqoh asal yang dapat dipindahkan.');
+        } else {
+            $db->beginTransaction();
+            try {
+                $historyStatement = $db->prepare('INSERT INTO student_halaqoh_history (student_id, from_halaqoh_id, to_halaqoh_id, transfer_date, notes, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+                $notes = trim($_POST['notes'] ?? '');
+                foreach ($studentsToTransfer as $studentToTransfer) {
+                    $historyStatement->execute(array((int) $studentToTransfer['id'], $fromHalaqohId, $toHalaqohId, $transferDate, $notes, user()['id'], date('Y-m-d H:i:s')));
+                }
+                $db->prepare('UPDATE students SET halaqoh_id = ? WHERE halaqoh_id = ?')->execute(array($toHalaqohId, $fromHalaqohId));
+                $db->commit();
+                flash('success', count($studentsToTransfer) . ' santri berhasil dipindahkan dari ' . $sourceHalaqoh['name'] . ' ke ' . $destinationHalaqoh['name'] . '.');
+            } catch (Throwable $exception) {
+                $db->rollBack();
+                flash('error', $exception->getMessage());
+            }
+        }
+        redirect('index.php?page=transfers');
+    }
     if ($action === 'save') {
         require_role('admin','ustadzah'); $entity=$_POST['entity'] ?? '';
         try {

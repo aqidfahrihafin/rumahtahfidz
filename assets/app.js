@@ -188,6 +188,17 @@ if (transferStudent) {
     });
 }
 
+const bulkTransferSource = document.getElementById("bulkTransferSource");
+if (bulkTransferSource) {
+    bulkTransferSource.addEventListener("change", function () {
+        const destination = document.getElementById("bulkTransferDestination");
+        Array.from(destination.options).forEach(function (option, index) {
+            option.disabled = index > 0 && option.value === bulkTransferSource.value;
+        });
+        if (destination.value === bulkTransferSource.value) destination.value = "";
+    });
+}
+
 document.querySelectorAll(".edit-row").forEach(function (button) {
     button.addEventListener("click", function () {
         openForm(JSON.parse(button.dataset.row));
