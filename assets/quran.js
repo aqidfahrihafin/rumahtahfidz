@@ -28,7 +28,7 @@
         try {
             const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
             if (saved && saved.surah && saved.verse) {
-                lastReading.href = "index.php?page=quran-read&surah=" + encodeURIComponent(saved.surah) + "#ayat-" + encodeURIComponent(saved.verse);
+                lastReading.href = "index.php?page=quran-read&surah=" + encodeURIComponent(saved.surah) + (lastReading.dataset.context || "") + "#ayat-" + encodeURIComponent(saved.verse);
                 document.getElementById("lastReadingName").textContent = saved.name;
                 document.getElementById("lastReadingVerse").textContent = "Ayat " + saved.verse;
                 lastReading.hidden = false;

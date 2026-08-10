@@ -17,11 +17,13 @@ if ($page === 'home') {
     exit;
 }
 if ($page === 'quran') {
+    $quranFromDashboard = user() && ($_GET['from'] ?? '') === 'dashboard';
     $publicSurahs = rows('SELECT id, surah_number, name, verses, juz FROM surahs WHERE surah_number BETWEEN 1 AND 114 ORDER BY surah_number');
     include __DIR__ . '/views/quran.php';
     exit;
 }
 if ($page === 'quran-read') {
+    $quranFromDashboard = user() && ($_GET['from'] ?? '') === 'dashboard';
     $publicSurah = row('SELECT * FROM surahs WHERE surah_number = ?', array((int) ($_GET['surah'] ?? 0)));
     $previousSurah = null;
     $nextSurah = null;
