@@ -237,13 +237,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-if ($page === 'print-report' || $page === 'print-reports') {
+if ($page === 'print-report' || $page === 'print-reports' || $page === 'print-student-reports') {
     $conditions = array();
     $parameters = array();
 
     if ($page === 'print-report') {
         $conditions[] = 'a.id = ?';
         $parameters[] = (int) ($_GET['id'] ?? 0);
+    }
+    if ($page === 'print-student-reports') {
+        $conditions[] = 's.id = ?';
+        $parameters[] = (int) ($_GET['student_id'] ?? 0);
     }
     if (user()['role'] === 'ustadzah') {
         $teacherId = (int) (scalar('SELECT id FROM teachers WHERE user_id = ?', array(user()['id'])) ?: 0);

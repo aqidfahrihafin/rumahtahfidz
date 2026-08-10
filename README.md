@@ -81,5 +81,6 @@ Untuk menambahkan master data baru, daftarkan metadata dan konfigurasi tabelnya 
 ## Pengiriman laporan
 
 - WhatsApp menggunakan tautan resmi `wa.me` dengan nomor dan isi laporan yang telah disiapkan. Pengguna tetap menekan tombol kirim di WhatsApp.
-- Email menggunakan fungsi `mail()` PHP. Pada server produksi, SMTP/PHP mail harus dikonfigurasi agar email benar-benar diterima.
+- Nama dan alamat email pengirim diatur melalui `config/mail.php` pada nilai `from_name` dan `from_email`.
+- Email menggunakan fungsi `mail()` PHP. Pada server produksi, layanan email/PHP mail pada hosting harus aktif agar email benar-benar diterima.
 - Logika dan format pesan berada di `app/reports.php`, sehingga mudah diganti ke WhatsApp Business API atau layanan SMTP.

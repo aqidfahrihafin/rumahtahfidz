@@ -13,7 +13,7 @@ $role = user()['role'];
     <title><?= e($pageMeta['title']) ?> — Rumah Tahfidz As-Sakinah</title>
     <link rel="icon" href="assets/images/logo.jpeg" type="image/jpeg">
     <link rel="stylesheet" href="assets/app.css?v=20260811f">
-    <link rel="stylesheet" href="assets/components.css?v=20260811z">
+    <link rel="stylesheet" href="assets/components.css?v=20260811za">
 </head>
 <body>
     <div class="app-shell">

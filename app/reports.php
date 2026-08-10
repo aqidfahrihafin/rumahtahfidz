@@ -77,11 +77,14 @@ function send_report_email($report)
         return false;
     }
 
+    $mailConfig = require ROOT . '/config/mail.php';
+    $fromEmail = isset($mailConfig['from_email']) ? $mailConfig['from_email'] : 'noreply@rumahtahfidz.id';
+    $fromName = isset($mailConfig['from_name']) ? $mailConfig['from_name'] : 'Rumah Tahfidz As-Sakinah';
     $subject = 'Laporan Tahfidz ' . $report['student'] . ' - ' . format_date($report['date']);
     $headers = array(
         'MIME-Version: 1.0',
         'Content-Type: text/plain; charset=UTF-8',
-        'From: Rumah Tahfidz As-Sakinah <noreply@rumahtahfidz.local>',
+        'From: ' . $fromName . ' <' . $fromEmail . '>',
     );
 
     return mail($report['guardian_email'], $subject, report_message($report), implode("\r\n", $headers));
