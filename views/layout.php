@@ -16,7 +16,7 @@ $role = user()['role'];
     <link rel="stylesheet" href="assets/components.css?v=20260811zf">
     <link rel="stylesheet" href="assets/halaqoh-tools.css?v=20260811e">
     <link rel="stylesheet" href="assets/guardian-dashboard.css?v=20260811b">
-    <link rel="stylesheet" href="assets/dashboard-unified.css?v=20260811a">
+    <link rel="stylesheet" href="assets/dashboard-unified.css?v=20260811b">
 </head>
 <body class="page-<?=e($page)?> role-<?=e($role)?>">
     <div class="app-shell">

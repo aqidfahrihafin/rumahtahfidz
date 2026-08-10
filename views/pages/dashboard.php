@@ -59,6 +59,9 @@ $progress = rows('SELECT s.name AS student, h.name AS halaqoh, ROUND(AVG(a.memor
 </section>
 <?php endif; ?>
 
+<section class="dashboard-overview-card">
+<header class="dashboard-overview-head"><div><p class="eyebrow green">Pusat Aktivitas</p><h3>Akses cepat dan ringkasan</h3></div><span><?= $role === 'admin' ? 'Administrator' : ($role === 'ustadzah' ? 'Ustadzah' : 'Wali Santri') ?></span></header>
+<div class="dashboard-overview-section"><small class="dashboard-section-label">Akses Cepat</small>
 <nav class="dashboard-shortcuts" aria-label="Aksi cepat">
     <?php if ($role === 'admin'): ?>
         <a href="index.php?page=assessments"><i>＋</i><span><b>Tambah Penilaian</b><small>Catat perkembangan santri</small></span></a>
@@ -75,6 +78,9 @@ $progress = rows('SELECT s.name AS student, h.name AS halaqoh, ROUND(AVG(a.memor
     <?php endif; ?>
 </nav>
 
+<div class="dashboard-overview-divider"></div>
+<small class="dashboard-section-label">Ringkasan</small>
+
 <section class="stats" aria-label="Ringkasan data">
     <?php foreach ($cards as $card): ?>
         <article class="stat">
@@ -82,6 +88,8 @@ $progress = rows('SELECT s.name AS student, h.name AS halaqoh, ROUND(AVG(a.memor
             <div><span><?= e($card[0]) ?></span><strong><?= e($card[1]) ?></strong></div>
         </article>
     <?php endforeach; ?>
+</section>
+</div>
 </section>
 
 <section class="grid two">
