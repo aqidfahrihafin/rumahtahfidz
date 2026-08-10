@@ -111,17 +111,37 @@ if (assessmentStudent) {
         [document.getElementById("assessmentSurah"), document.getElementById("murojaahStart"), document.getElementById("murojaahEnd")].forEach(function (field) {
             if (!field) return;
             Array.from(field.options).forEach(function (surahOption, index) {
-                if (index > 0) surahOption.hidden = !allowedSurahs.includes(surahOption.value);
+                if (index === 0) return;
+                const isAllowed = allowedSurahs.includes(surahOption.value);
+                surahOption.hidden = !isAllowed;
+                surahOption.disabled = !isAllowed;
             });
             if (field.value && !allowedSurahs.includes(field.value)) field.value = "";
         });
         const juzField = document.getElementById("murojaahJuz");
+        const murojaahOptions = Array.from(document.getElementById("murojaahStart").options).slice(1);
+        const allowedJuz = new Set();
+        murojaahOptions.forEach(function (surahOption) {
+            if (!allowedSurahs.includes(surahOption.value)) return;
+            String(surahOption.dataset.juz || "").split(",").filter(Boolean).forEach(function (juz) { allowedJuz.add(juz); });
+        });
+        Array.from(juzField.options).forEach(function (juzOption, index) {
+            if (index === 0) {
+                juzOption.textContent = assessmentStudent.value ? "Pilih juz sesuai cakupan" : "Pilih santri terlebih dahulu";
+                return;
+            }
+            const isAllowed = allowedJuz.has(juzOption.value);
+            juzOption.hidden = !isAllowed;
+            juzOption.disabled = !isAllowed;
+        });
+        if (juzField.value && !allowedJuz.has(juzField.value)) juzField.value = "";
         if (juzField && juzField.value) juzField.dispatchEvent(new Event("change"));
     });
 
     assessmentStudent.form.addEventListener("submit", function () {
         assessmentStudent.disabled = false;
     });
+    assessmentStudent.dispatchEvent(new Event("change"));
 }
 
 const assessmentSurah = document.getElementById("assessmentSurah");
