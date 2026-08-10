@@ -52,8 +52,8 @@ function data_page_config($page)
         ),
         'teachers' => array(
             'from' => 'teachers t LEFT JOIN users account ON account.id = t.user_id', 'select' => 't.*, account.is_active AS account_active',
-            'headers' => array('Nama Ustadzah', 'Alamat', 'Email', 'Kontak', 'Status Akun'),
-            'cells' => function ($row) { return array(e($row['name']), e($row['address']), '<a href="mailto:' . e($row['email']) . '">' . e($row['email']) . '</a>', e($row['phone']), account_status_badge($row['user_id'], $row['account_active'])); },
+            'headers' => array('Ustadzah', 'Alamat', 'Email', 'Kontak', 'Status Akun'),
+            'cells' => function ($row) { return array('<span class="table-person"><b>' . e($row['name']) . '</b><small>' . e($row['teacher_code']) . '</small></span>', e($row['address']), '<a href="mailto:' . e($row['email']) . '">' . e($row['email']) . '</a>', e($row['phone']), account_status_badge($row['user_id'], $row['account_active'])); },
             'table' => 'teachers', 'entity' => 'teacher', 'search' => 'name'
         ),
         'halaqoh' => array(

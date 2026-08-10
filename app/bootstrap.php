@@ -155,6 +155,23 @@ function apply_student_code_migration(PDO $db): void {
 
 apply_student_code_migration($db);
 
+function apply_teacher_code_migration(PDO $db): void {
+    try {
+        $db->query('SELECT teacher_code FROM teachers LIMIT 1');
+    } catch (Throwable $exception) {
+        $db->exec('ALTER TABLE teachers ADD COLUMN teacher_code VARCHAR(30)');
+    }
+
+    $teachers = $db->query("SELECT id FROM teachers WHERE teacher_code IS NULL OR teacher_code = '' ORDER BY id")->fetchAll();
+    $update = $db->prepare('UPDATE teachers SET teacher_code = ? WHERE id = ?');
+    foreach ($teachers as $teacher) {
+        $id = (int) $teacher['id'];
+        $update->execute(array('UST-' . str_pad((string) $id, 5, '0', STR_PAD_LEFT), $id));
+    }
+}
+
+apply_teacher_code_migration($db);
+
 function apply_halaqoh_transfer_migration(PDO $db): void {
     $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
     if ($driver === 'mysql') {

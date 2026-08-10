@@ -38,6 +38,6 @@ $role = user()['role'];
     <?php include __DIR__ . '/partials/detail_modal.php'; ?>
     <?php include __DIR__ . '/partials/confirm_modal.php'; ?>
     <div class="sidebar-overlay" onclick="document.body.classList.remove('menu-open')"></div>
-    <script src="assets/app.js?v=20260811w"></script>
+    <script src="assets/app.js?v=20260811x"></script>
 </body>
 </html>

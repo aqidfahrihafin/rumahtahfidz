@@ -320,7 +320,7 @@ document.querySelectorAll(".view-detail").forEach(function (button) {
 
         detail.innerHTML = "";
         const detailLabels = {
-            name: "Nama", student_code: "Nomor induk santri", nickname: "Nama panggilan", birth_date: "Tanggal lahir",
+            name: "Nama", student_code: "Nomor induk santri", teacher_code: "Nomor induk Ustadzah", nickname: "Nama panggilan", birth_date: "Tanggal lahir",
             gender: "Jenis kelamin", address: "Alamat", email: "Email",
             phone: "Nomor telepon", guardian_name: "Nama wali", guardian_phone: "WhatsApp wali",
             guardian_email: "Email wali", halaqoh: "Halaqoh", level: "Tingkat",

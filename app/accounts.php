@@ -49,6 +49,9 @@ function save_teacher_with_account($input)
     } else {
         $db->prepare('INSERT INTO teachers (user_id, name, address, email, phone) VALUES (?, ?, ?, ?, ?)')
             ->execute(array($userId, trim($input['name']), trim($input['address']), trim($input['email']), trim($input['phone'])));
+        $teacherId = (int) $db->lastInsertId();
+        $teacherCode = 'UST-' . str_pad((string) $teacherId, 5, '0', STR_PAD_LEFT);
+        $db->prepare('UPDATE teachers SET teacher_code = ? WHERE id = ?')->execute(array($teacherCode, $teacherId));
     }
 }
 
