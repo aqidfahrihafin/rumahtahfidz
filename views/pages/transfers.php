@@ -1,9 +1,10 @@
 <section class="page-intro"><div><p class="eyebrow green">Administrasi Santri</p><h2>Perpindahan Halaqoh</h2><p>Pindahkan santri tanpa menghilangkan riwayat Halaqoh sebelumnya.</p></div></section>
 
 <section class="transfer-layout">
-    <div class="transfer-actions-column">
     <article class="data-card transfer-form-card">
         <div class="history-section-title"><div><p class="eyebrow green">Formulir</p><h3>Pindahkan Santri</h3></div></div>
+        <div class="transfer-mode-tabs" role="tablist"><button class="active" type="button" data-transfer-mode="student"><span>1</span>Per Santri</button><i></i><button type="button" data-transfer-mode="halaqoh"><span>2</span>Satu Halaqoh</button></div>
+        <div class="transfer-mode-panel active" data-transfer-panel="student">
         <div class="transfer-guide"><span>⇄</span><div><b>Perubahan tanpa kehilangan riwayat</b><p>Pilih santri dan Halaqoh tujuan. Data nilai sebelumnya tetap tersimpan.</p></div></div>
         <form method="post" class="transfer-form" data-confirm data-confirm-type="info" data-confirm-title="Pindahkan Halaqoh santri?" data-confirm-message="Halaqoh aktif santri akan diperbarui dan perubahan ini dicatat dalam riwayat." data-confirm-button="Ya, pindahkan">
             <input type="hidden" name="csrf" value="<?= csrf() ?>"><input type="hidden" name="action" value="transfer_student">
@@ -14,9 +15,9 @@
             <label class="full">Catatan<textarea name="notes" rows="3" placeholder="Alasan atau keterangan perpindahan (opsional)"></textarea></label>
             <div class="full transfer-submit"><button class="btn primary" type="submit">Simpan Perpindahan</button></div>
         </form>
-    </article>
+        </div>
 
-    <article class="data-card transfer-form-card bulk-transfer-card">
+        <div class="transfer-mode-panel" data-transfer-panel="halaqoh" hidden>
         <div class="history-section-title"><div><p class="eyebrow green">Perpindahan Massal</p><h3>Pindahkan Satu Halaqoh</h3></div></div>
         <div class="transfer-guide warning"><span>!</span><div><b>Seluruh santri akan dipindahkan</b><p>Semua santri pada Halaqoh asal berpindah ke Halaqoh tujuan dalam satu proses.</p></div></div>
         <form method="post" class="transfer-form" data-confirm data-confirm-type="warning" data-confirm-title="Pindahkan seluruh santri?" data-confirm-message="Semua santri pada Halaqoh asal akan dipindahkan dan masing-masing mendapatkan catatan riwayat." data-confirm-button="Ya, pindahkan semua">
@@ -27,8 +28,8 @@
             <label class="full">Catatan<textarea name="notes" rows="3" placeholder="Contoh: Kenaikan tingkat Halaqoh"></textarea></label>
             <div class="full transfer-submit"><button class="btn primary" type="submit">Pindahkan Semua Santri</button></div>
         </form>
+        </div>
     </article>
-    </div>
 
     <article class="data-card transfer-history-card">
         <div class="history-section-title"><div><p class="eyebrow green">Riwayat</p><h3>Perpindahan Halaqoh</h3></div><span><?=count($transferHistory)?> perpindahan tercatat</span></div>

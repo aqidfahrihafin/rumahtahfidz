@@ -199,6 +199,20 @@ if (bulkTransferSource) {
     });
 }
 
+document.querySelectorAll("[data-transfer-mode]").forEach(function (button) {
+    button.addEventListener("click", function () {
+        const selectedMode = button.dataset.transferMode;
+        document.querySelectorAll("[data-transfer-mode]").forEach(function (modeButton) {
+            modeButton.classList.toggle("active", modeButton === button);
+        });
+        document.querySelectorAll("[data-transfer-panel]").forEach(function (panel) {
+            const active = panel.dataset.transferPanel === selectedMode;
+            panel.hidden = !active;
+            panel.classList.toggle("active", active);
+        });
+    });
+});
+
 document.querySelectorAll(".edit-row").forEach(function (button) {
     button.addEventListener("click", function () {
         openForm(JSON.parse(button.dataset.row));

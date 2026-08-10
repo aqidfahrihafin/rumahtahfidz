@@ -10,9 +10,9 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
         <p><?= e($pageMeta['description']) ?></p>
     </div>
     <?php if ($canManage): ?>
-        <div class="page-actions"><?php if($page==='surahs'):?><form method="post" data-confirm data-confirm-type="info" data-confirm-title="Sinkronkan Data Surah?" data-confirm-message="Data surat akan diambil dari EQuran.id. Data yang sudah ada akan diperbarui tanpa menghapus data manual." data-confirm-button="Ya, sinkronkan"><input type="hidden" name="csrf" value="<?=csrf()?>"><input type="hidden" name="action" value="sync_surahs"><button class="btn secondary" type="submit">↻ Sinkronkan dari API</button></form><?php endif?><?php if($page==='students'):?><a class="btn secondary" href="index.php?page=print-students" target="_blank">⇩ Ekspor PDF</a><?php endif?><button class="btn primary" type="button" onclick="openForm()">＋ Tambah Data</button></div>
+        <div class="page-actions"><?php if($page==='surahs'):?><form method="post" data-confirm data-confirm-type="info" data-confirm-title="Sinkronkan Data Surah?" data-confirm-message="Data surat akan diambil dari EQuran.id. Data yang sudah ada akan diperbarui tanpa menghapus data manual." data-confirm-button="Ya, sinkronkan"><input type="hidden" name="csrf" value="<?=csrf()?>"><input type="hidden" name="action" value="sync_surahs"><button class="btn secondary" type="submit">↻ Sinkronkan dari API</button></form><?php endif?><?php if($page==='students'):?><a class="btn secondary" href="index.php?page=print-students<?= $selectedHalaqohId ? '&halaqoh_id='.(int)$selectedHalaqohId : '' ?>" target="_blank">⇩ Ekspor PDF</a><?php endif?><button class="btn primary" type="button" onclick="openForm()">＋ Tambah Data</button></div>
     <?php elseif ($page === 'students'): ?>
-        <a class="btn secondary" href="index.php?page=print-students" target="_blank">⇩ Ekspor PDF</a>
+        <a class="btn secondary" href="index.php?page=print-students<?= $selectedHalaqohId ? '&halaqoh_id='.(int)$selectedHalaqohId : '' ?>" target="_blank">⇩ Ekspor PDF</a>
     <?php elseif ($page === 'reports'): ?>
         <a class="btn secondary" href="index.php?page=print-reports" target="_blank">⇩ Cetak Semua</a>
     <?php endif; ?>
