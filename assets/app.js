@@ -97,12 +97,26 @@ document.querySelectorAll("[data-step-button]").forEach(function (button) {
 });
 
 const assessmentStudent = document.getElementById("assessmentStudent");
+function assessmentAllowedSurahs() {
+    if (!assessmentStudent || !assessmentStudent.value) return [];
+    return (window.assessmentCoverage && window.assessmentCoverage[assessmentStudent.value]) || [];
+}
 if (assessmentStudent) {
     assessmentStudent.addEventListener("change", function () {
         const option = assessmentStudent.options[assessmentStudent.selectedIndex];
         document.getElementById("assessmentHalaqoh").value = option ? option.dataset.halaqoh || "" : "";
         document.getElementById("assessmentTeacher").value = option ? option.dataset.teacherName || "" : "";
         document.getElementById("assessmentTeacherId").value = option ? option.dataset.teacherId || "" : "";
+        const allowedSurahs = assessmentAllowedSurahs();
+        [document.getElementById("assessmentSurah"), document.getElementById("murojaahStart"), document.getElementById("murojaahEnd")].forEach(function (field) {
+            if (!field) return;
+            Array.from(field.options).forEach(function (surahOption, index) {
+                if (index > 0) surahOption.hidden = !allowedSurahs.includes(surahOption.value);
+            });
+            if (field.value && !allowedSurahs.includes(field.value)) field.value = "";
+        });
+        const juzField = document.getElementById("murojaahJuz");
+        if (juzField && juzField.value) juzField.dispatchEvent(new Event("change"));
     });
 
     assessmentStudent.form.addEventListener("submit", function () {
@@ -132,11 +146,25 @@ if (murojaahJuz) {
             field.options[0].textContent = selectedJuz ? "Pilih surat pada Juz " + selectedJuz : "Pilih Juz terlebih dahulu";
             Array.from(field.options).forEach(function (option, index) {
                 if (index === 0) return;
-                const matches = String(option.dataset.juz || "").split(",").includes(selectedJuz);
+                const matches = String(option.dataset.juz || "").split(",").includes(selectedJuz) && assessmentAllowedSurahs().includes(option.value);
                 option.hidden = !matches;
                 option.disabled = !matches;
             });
         });
+    });
+}
+
+const transferStudent = document.getElementById("transferStudent");
+if (transferStudent) {
+    transferStudent.addEventListener("change", function () {
+        const option = transferStudent.options[transferStudent.selectedIndex];
+        const currentId = option ? option.dataset.halaqohId || "" : "";
+        document.getElementById("transferCurrentHalaqoh").value = option ? option.dataset.halaqoh || "" : "";
+        const destination = document.getElementById("transferDestination");
+        Array.from(destination.options).forEach(function (halaqohOption, index) {
+            halaqohOption.disabled = index > 0 && halaqohOption.value === currentId;
+        });
+        if (destination.value === currentId) destination.value = "";
     });
 }
 

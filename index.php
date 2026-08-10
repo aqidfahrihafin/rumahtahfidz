@@ -180,6 +180,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($emailReturn === 'history') redirect('index.php?page=history&type=report&student_id=' . (int) ($_POST['student_id'] ?? 0));
         redirect('index.php?page=reports');
     }
+    if ($action === 'transfer_student') {
+        require_role('admin');
+        $studentId = (int) ($_POST['student_id'] ?? 0);
+        $toHalaqohId = (int) ($_POST['to_halaqoh_id'] ?? 0);
+        $transferDate = trim($_POST['transfer_date'] ?? '');
+        $student = row('SELECT id, halaqoh_id FROM students WHERE id = ?', array($studentId));
+        if (!$student || !row('SELECT id FROM halaqoh WHERE id = ?', array($toHalaqohId))) {
+            flash('error', 'Santri atau Halaqoh tujuan tidak ditemukan.');
+        } elseif ((int) $student['halaqoh_id'] === $toHalaqohId) {
+            flash('error', 'Halaqoh tujuan harus berbeda dari Halaqoh saat ini.');
+        } elseif ($transferDate === '') {
+            flash('error', 'Tanggal perpindahan wajib diisi.');
+        } else {
+            $db->beginTransaction();
+            try {
+                $db->prepare('INSERT INTO student_halaqoh_history (student_id, from_halaqoh_id, to_halaqoh_id, transfer_date, notes, created_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)')->execute(array($studentId, $student['halaqoh_id'], $toHalaqohId, $transferDate, trim($_POST['notes'] ?? ''), user()['id'], date('Y-m-d H:i:s')));
+                $db->prepare('UPDATE students SET halaqoh_id = ? WHERE id = ?')->execute(array($toHalaqohId, $studentId));
+                $db->commit();
+                flash('success', 'Santri berhasil dipindahkan dan riwayat Halaqoh telah disimpan.');
+            } catch (Throwable $exception) {
+                $db->rollBack();
+                flash('error', $exception->getMessage());
+            }
+        }
+        redirect('index.php?page=transfers');
+    }
     if ($action === 'save') {
         require_role('admin','ustadzah'); $entity=$_POST['entity'] ?? '';
         try {
@@ -250,6 +276,11 @@ if ($page === 'print-students') {
     } elseif (user()['role'] === 'wali') {
         $studentConditions[] = 's.guardian_user_id = ?';
         $studentParameters[] = user()['id'];
+    }
+    $printHalaqohId = (int) ($_GET['halaqoh_id'] ?? 0);
+    if ($printHalaqohId > 0) {
+        $studentConditions[] = 's.halaqoh_id = ?';
+        $studentParameters[] = $printHalaqohId;
     }
     $studentPrintSql = 'SELECT s.*, h.name AS halaqoh, t.name AS teacher FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN teachers t ON t.id = h.teacher_id';
     if ($studentConditions) $studentPrintSql .= ' WHERE ' . implode(' AND ', $studentConditions);
@@ -364,6 +395,17 @@ if (!in_array($page, $allowedPages, true)) {
 
 $pageMeta = $pages[$page];
 $flash = take_flash();
+$selectedHalaqohId = (int) ($_GET['halaqoh_id'] ?? 0);
+
+if ($page === 'transfers') {
+    require_role('admin');
+    $transferStudents = rows('SELECT s.id, s.student_code, s.name, s.halaqoh_id, h.name AS halaqoh FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id ORDER BY s.name');
+    $transferHalaqohs = rows('SELECT id, name, level FROM halaqoh ORDER BY name');
+    $transferHistory = rows('SELECT sh.*, s.student_code, s.name AS student, hf.name AS from_halaqoh, ht.name AS to_halaqoh, u.name AS operator FROM student_halaqoh_history sh JOIN students s ON s.id = sh.student_id LEFT JOIN halaqoh hf ON hf.id = sh.from_halaqoh_id JOIN halaqoh ht ON ht.id = sh.to_halaqoh_id LEFT JOIN users u ON u.id = sh.created_by ORDER BY sh.transfer_date DESC, sh.id DESC');
+    include __DIR__ . '/views/layout.php';
+    exit;
+}
+
 $query = trim(isset($_GET['q']) ? $_GET['q'] : '');
 $data = array();
 $dataConfig = null;
@@ -384,6 +426,10 @@ if ($page !== 'dashboard' && $page !== 'profile') {
     } elseif ($page === 'students' && $role === 'ustadzah') {
         $conditions[] = 'h.teacher_id = ?';
         $parameters[] = (int) (scalar('SELECT id FROM teachers WHERE user_id = ?', array(user()['id'])) ?: 0);
+    }
+    if ($page === 'students' && $selectedHalaqohId > 0) {
+        $conditions[] = 's.halaqoh_id = ?';
+        $parameters[] = $selectedHalaqohId;
     }
 
     if (in_array($page, array('assessments', 'reports'), true)) {

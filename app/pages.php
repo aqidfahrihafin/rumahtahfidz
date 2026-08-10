@@ -7,6 +7,7 @@ function page_definitions($role)
         'students' => array('title' => 'Data Santri', 'description' => 'Kelola identitas santri dan wali.', 'icon' => '♙', 'template' => 'data'),
         'teachers' => array('title' => 'Data Ustadzah', 'description' => 'Kelola ustadzah pembimbing halaqoh.', 'icon' => '♚', 'template' => 'data'),
         'halaqoh' => array('title' => 'Data Halaqoh', 'description' => 'Atur kelompok, tingkat, dan cakupan hafalan.', 'icon' => '◉', 'template' => 'data'),
+        'transfers' => array('title' => 'Perpindahan Halaqoh', 'description' => 'Pindahkan santri dan simpan riwayat perubahan halaqoh.', 'icon' => '⇄', 'template' => 'transfers'),
         'categories' => array('title' => 'Kategori Penilaian', 'description' => 'Kelola kelompok kriteria evaluasi.', 'icon' => '◇', 'template' => 'data'),
         'indicators' => array('title' => 'Indikator Penilaian', 'description' => 'Kelola indikator dan deskripsi evaluasi.', 'icon' => '✓', 'template' => 'data'),
         'surahs' => array('title' => 'Data Surah', 'description' => 'Kelola referensi surah, ayat, dan juz.', 'icon' => '☾', 'template' => 'data'),
@@ -29,7 +30,7 @@ function page_definitions($role)
 function allowed_pages($role)
 {
     if ($role === 'admin') {
-        return array('dashboard', 'teachers', 'students', 'halaqoh', 'categories', 'indicators', 'surahs', 'assessments', 'reports', 'profile');
+        return array('dashboard', 'teachers', 'students', 'halaqoh', 'transfers', 'categories', 'indicators', 'surahs', 'assessments', 'reports', 'profile');
     }
 
     if ($role === 'ustadzah') {

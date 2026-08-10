@@ -155,6 +155,17 @@ function apply_student_code_migration(PDO $db): void {
 
 apply_student_code_migration($db);
 
+function apply_halaqoh_transfer_migration(PDO $db): void {
+    $driver = $db->getAttribute(PDO::ATTR_DRIVER_NAME);
+    if ($driver === 'mysql') {
+        $db->exec('CREATE TABLE IF NOT EXISTS student_halaqoh_history (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, student_id INT NOT NULL, from_halaqoh_id INT NULL, to_halaqoh_id INT NOT NULL, transfer_date DATE NOT NULL, notes TEXT, created_by INT NULL, created_at DATETIME NOT NULL)');
+    } else {
+        $db->exec('CREATE TABLE IF NOT EXISTS student_halaqoh_history (id INTEGER PRIMARY KEY, student_id INTEGER NOT NULL, from_halaqoh_id INTEGER, to_halaqoh_id INTEGER NOT NULL, transfer_date TEXT NOT NULL, notes TEXT, created_by INTEGER, created_at TEXT NOT NULL)');
+    }
+}
+
+apply_halaqoh_transfer_migration($db);
+
 function apply_assessment_detail_migration(PDO $db): void {
     foreach (array('murojaah_start TEXT', 'murojaah_end TEXT', 'murojaah_juz INTEGER') as $column) {
         try {

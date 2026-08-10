@@ -13,6 +13,8 @@ textarea {
 
 @media(max-width:700px){.child-switcher{align-items:stretch;flex-direction:column}.child-switcher-list{display:grid;justify-content:stretch}.child-switcher-item{min-width:0}}
 
+.transfer-layout{display:grid;grid-template-columns:minmax(280px,.7fr) minmax(0,1.5fr);gap:18px}.transfer-form-card,.transfer-history-card{padding:20px}.transfer-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}.transfer-form label{display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:10px;font-weight:700}.transfer-form .full{grid-column:1/-1}.transfer-submit{display:flex;justify-content:flex-end}.student-filter{display:flex;align-items:flex-end;gap:10px;margin:-8px 0 16px;padding:12px 15px;border:1px solid var(--line);background:#fff}.student-filter label{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:10px;font-weight:700}.student-filter select{min-width:210px;padding:8px 10px}.student-filter a{padding-bottom:8px;color:var(--green);font-size:10px;font-weight:700}@media(max-width:900px){.transfer-layout{grid-template-columns:1fr}}@media(max-width:600px){.transfer-form{grid-template-columns:1fr}.transfer-form .full{grid-column:auto}.student-filter{align-items:stretch;flex-direction:column}.student-filter label{align-items:stretch;flex-direction:column}.student-filter select{min-width:0}}
+
 html,
 body,
 .login-page,

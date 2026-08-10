@@ -25,11 +25,14 @@ function save_detailed_assessment($input)
     if ($assignedTeacherId < 1 || $assignedTeacherId !== $teacherId) throw new InvalidArgumentException('Ustadzah penilai harus sesuai dengan pembimbing Halaqoh santri.');
     $surahData = row('SELECT * FROM surahs WHERE name = ?', array($surah));
     if (!$surahData) throw new InvalidArgumentException('Surah hafalan tidak terdaftar pada Data Surah.');
+    $studentHalaqohId = (int) (scalar('SELECT halaqoh_id FROM students WHERE id = ?', array($studentId)) ?: 0);
+    if (!row('SELECT surah_id FROM halaqoh_surahs WHERE halaqoh_id = ? AND surah_id = ?', array($studentHalaqohId, (int) $surahData['id']))) throw new InvalidArgumentException('Surah hafalan berada di luar cakupan Halaqoh santri.');
     if ($verseEnd < $verseStart || $verseEnd > (int) $surahData['verses']) throw new InvalidArgumentException('Rentang ayat hafalan tidak sesuai jumlah ayat surah.');
     if ($murojaahJuz < 1 || $murojaahJuz > 30) throw new InvalidArgumentException('Juz murojaah wajib dipilih.');
     $murojaahStartData = row('SELECT id, juz, surah_number FROM surahs WHERE name = ?', array($murojaahStart));
     $murojaahEndData = row('SELECT id, juz, surah_number FROM surahs WHERE name = ?', array($murojaahEnd));
     if (!$murojaahStartData || !$murojaahEndData || !row('SELECT surah_id FROM surah_juz WHERE surah_id = ? AND juz = ?', array((int) $murojaahStartData['id'], $murojaahJuz)) || !row('SELECT surah_id FROM surah_juz WHERE surah_id = ? AND juz = ?', array((int) $murojaahEndData['id'], $murojaahJuz))) throw new InvalidArgumentException('Surah awal dan akhir harus sesuai dengan Juz murojaah yang dipilih.');
+    if (!row('SELECT surah_id FROM halaqoh_surahs WHERE halaqoh_id = ? AND surah_id = ?', array($studentHalaqohId, (int) $murojaahStartData['id'])) || !row('SELECT surah_id FROM halaqoh_surahs WHERE halaqoh_id = ? AND surah_id = ?', array($studentHalaqohId, (int) $murojaahEndData['id']))) throw new InvalidArgumentException('Rentang murojaah berada di luar cakupan Halaqoh santri.');
     if ((int) $murojaahEndData['surah_number'] < (int) $murojaahStartData['surah_number']) throw new InvalidArgumentException('Surah akhir tidak boleh berada sebelum Surah awal.');
     if ($teacherId < 1 || $date === '') throw new InvalidArgumentException('Ustadzah penilai dan tanggal wajib diisi.');
     if (!$hafalanScores || !$murojaahScores) throw new InvalidArgumentException('Nilai indikator hafalan dan murojaah wajib diisi.');

@@ -1,6 +1,6 @@
 <?php
 $currentTeacher = user()['role'] === 'ustadzah' ? row('SELECT id, name FROM teachers WHERE user_id = ?', array(user()['id'])) : null;
-$studentSql = 'SELECT s.id, s.name, h.name AS halaqoh, t.id AS teacher_id, t.name AS teacher_name FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN teachers t ON t.id = h.teacher_id';
+$studentSql = 'SELECT s.id, s.name, s.halaqoh_id, h.name AS halaqoh, t.id AS teacher_id, t.name AS teacher_name FROM students s LEFT JOIN halaqoh h ON h.id = s.halaqoh_id LEFT JOIN teachers t ON t.id = h.teacher_id';
 $studentParams = array();
 if (user()['role'] === 'ustadzah') {
     if ($currentTeacher) { $studentSql .= ' WHERE h.teacher_id = ?'; $studentParams[] = $currentTeacher['id']; }
@@ -8,12 +8,17 @@ if (user()['role'] === 'ustadzah') {
 }
 $studentSql .= ' ORDER BY s.name';
 $studentsForAssessment = rows($studentSql, $studentParams);
-$surahsForAssessment = rows('SELECT s.name, s.verses, COALESCE((SELECT GROUP_CONCAT(sj.juz) FROM surah_juz sj WHERE sj.surah_id = s.id), s.juz) AS juz FROM surahs s ORDER BY CASE WHEN s.surah_number IS NULL OR s.surah_number = 0 THEN 1 ELSE 0 END, s.juz, s.surah_number');
+$surahsForAssessment = rows('SELECT s.id, s.name, s.verses, COALESCE((SELECT GROUP_CONCAT(sj.juz) FROM surah_juz sj WHERE sj.surah_id = s.id), s.juz) AS juz, (SELECT GROUP_CONCAT(hs.halaqoh_id) FROM halaqoh_surahs hs WHERE hs.surah_id = s.id) AS halaqoh_ids FROM surahs s ORDER BY CASE WHEN s.surah_number IS NULL OR s.surah_number = 0 THEN 1 ELSE 0 END, s.juz, s.surah_number');
 $hafalanIndicators = rows("SELECT i.id, i.name FROM indicators i JOIN categories c ON c.id = i.category_id WHERE c.name = 'Hafalan' ORDER BY i.id");
 $murojaahIndicators = rows("SELECT i.id, i.name FROM indicators i JOIN categories c ON c.id = i.category_id WHERE c.name LIKE 'Muroja%' ORDER BY i.id");
 $additionalCategories = rows("SELECT c.id, c.name FROM categories c WHERE c.name <> 'Hafalan' AND c.name NOT LIKE 'Muroja%' AND EXISTS (SELECT 1 FROM indicators i WHERE i.category_id = c.id) ORDER BY c.id");
 $characterAspects = array('Kedisiplinan', 'Akhlak', 'Kejujuran', 'Ketekunan');
+$assessmentCoverage = array();
+foreach (rows('SELECT s.id AS student_id, sr.name AS surah FROM students s JOIN halaqoh_surahs hs ON hs.halaqoh_id = s.halaqoh_id JOIN surahs sr ON sr.id = hs.surah_id ORDER BY sr.surah_number') as $coverageRow) {
+    $assessmentCoverage[(int) $coverageRow['student_id']][] = $coverageRow['surah'];
+}
 ?>
+<script>window.assessmentCoverage = <?=json_encode($assessmentCoverage, JSON_UNESCAPED_UNICODE|JSON_HEX_TAG|JSON_HEX_AMP)?>;</script>
 <div class="modal" id="formModal">
     <div class="modal-box assessment-modal">
         <div class="modal-head"><div><p class="eyebrow green">Formulir Penilaian</p><h3 id="formTitle">Tambah Penilaian Santri</h3></div><button type="button" onclick="closeModal('formModal')">×</button></div>

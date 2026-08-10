@@ -18,6 +18,14 @@ $headers = array_merge(array('No'), $dataConfig['headers'], ($canManage || $hasR
     <?php endif; ?>
 </section>
 
+<?php if ($page === 'students'): ?>
+<form class="student-filter" method="get">
+    <input type="hidden" name="page" value="students">
+    <label>Filter Halaqoh<select name="halaqoh_id" onchange="this.form.submit()"><option value="0">Semua Halaqoh</option><?php foreach(rows('SELECT id,name FROM halaqoh ORDER BY name') as $filterHalaqoh):?><option value="<?=(int)$filterHalaqoh['id']?>" <?=(int)$selectedHalaqohId===(int)$filterHalaqoh['id']?'selected':''?>><?=e($filterHalaqoh['name'])?></option><?php endforeach?></select></label>
+    <?php if($selectedHalaqohId):?><a href="index.php?page=students">Hapus filter</a><?php endif?>
+</form>
+<?php endif; ?>
+
 <section class="data-card">
     <?php if($page==='surahs'):?><div class="api-source-note"><div><b>Sumber data Al-Qur’an</b><span>Nama dan jumlah ayat: EQuran.id v2 • Juz awal surat: Al Quran Cloud</span></div><div><a href="https://equran.id/apidev/v2" target="_blank" rel="noopener">Dokumentasi EQuran.id ↗</a><a href="https://alquran.cloud/api" target="_blank" rel="noopener">Dokumentasi Juz ↗</a></div></div><?php endif?>
     <div class="table-wrap">
